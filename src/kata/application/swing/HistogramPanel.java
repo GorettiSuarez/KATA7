@@ -14,13 +14,28 @@ import sun.font.CreatedFontTracker;
 
 public class HistogramPanel extends JPanel implements HistogramDisplay {
 
-    private Histogram<String> histogram;
+    private Histogram histogram;
 
     public HistogramPanel() {
         super (new BorderLayout());
     }
     
+    @Override
+    public Histogram histogram() {
+        return histogram;
+    }
     
+    @Override
+    public void show(Histogram histogram) {
+        this.histogram = histogram;
+        this.reload();
+    }
+    
+    private void reload() {
+        this.removeAll();
+        this.add(new ChartPanel(createChart(createDataset(histogram))));
+        this.revalidate();
+    }
 
     private JFreeChart createChart(DefaultCategoryDataset dataSet) {
         JFreeChart chart = ChartFactory.createBarChart(null, "", "NUMERO", dataSet, PlotOrientation.VERTICAL, false, false, false);
@@ -30,26 +45,10 @@ public class HistogramPanel extends JPanel implements HistogramDisplay {
     private DefaultCategoryDataset createDataset(Histogram histogram) {
         DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
         for (Object key : histogram.keySet()) {
-            dataSet.addValue(histogram.get((String) key), "", (Comparable) key);
+            dataSet.addValue(histogram.get(key), "", (Comparable) key);
         }
         return dataSet;
 
-    }
-
-    @Override
-    public Histogram histogram() {
-        return histogram;
-    }
-
-    @Override
-    public void show(Histogram histogram) {
-        this.histogram = histogram;
-        this.reload();
-    }
-    private void reload() {
-        this.removeAll();
-        this.add(new ChartPanel(createChart(createDataset(histogram))));
-        this.revalidate();
     }
     
 }
